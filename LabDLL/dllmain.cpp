@@ -7,13 +7,18 @@
 using namespace concurrency;
 using namespace std;
 
-
+/// <summary>
+/// Установка самого мощного(индекс=0) ускорителя, ускорителем по умолчанию
+/// </summary>
 extern "C" __declspec (dllexport) void set_device()
 {
     std::vector<accelerator> accs = accelerator::get_all();
     accelerator::set_default(accs[0].device_path);
 }
 
+/// <summary>
+/// Получить список всех ускорителец
+/// </summary>
 extern "C" __declspec (dllexport) void list_all_accelerators()
 {
     std::vector<accelerator> accs = accelerator::get_all();
@@ -32,6 +37,14 @@ extern "C" __declspec (dllexport) void list_all_accelerators()
     }
 }
 
+/// <summary>
+/// Суммированеи двух векторов
+/// </summary>
+/// <param name="one">Первый вектор</param>
+/// <param name="two">Второй вектор</param>
+/// <param name="result">Вектор результата</param>
+/// <param name="size">Размер векторов</param>
+/// <returns></returns>
 extern "C" __declspec (dllexport) void _stdcall sum_vectors(int* one, int* two, int* result, int size)
 {
     set_device();
@@ -48,7 +61,15 @@ extern "C" __declspec (dllexport) void _stdcall sum_vectors(int* one, int* two, 
     res.synchronize();
 }
 
-
+/// <summary>
+/// Умножение матрицы на число
+/// </summary>
+/// <param name="matrix">Матрица</param>
+/// <param name="number">Число, на которое умножается</param>
+/// <param name="result">Матрица результата</param>
+/// <param name="sizeN">Число строк</param>
+/// <param name="sizeM">Число столбцов</param>
+/// <returns></returns>
 extern "C" __declspec (dllexport) void _stdcall multiply_matrix_by_number(int* matrix, int number, int* result, int sizeN, int sizeM)
 {
     set_device();
@@ -57,7 +78,7 @@ extern "C" __declspec (dllexport) void _stdcall multiply_matrix_by_number(int* m
 
     parallel_for_each(res.extent, [=](index<2> idx) restrict(amp)
         {
-            //int num = number;
+            int num = number;
             res(idx[0], idx[1]) = mat(idx[0], idx[1]) * 2;
         });
 
@@ -65,10 +86,18 @@ extern "C" __declspec (dllexport) void _stdcall multiply_matrix_by_number(int* m
     res.synchronize();
 }
 
-extern "C" __declspec (dllexport) void _stdcall trans_matrix(int* matrix_one, int* result, int sizeN, int sizeM)
+/// <summary>
+/// Транспонирование матрицы
+/// </summary>
+/// <param name="matrix">Матрица</param>
+/// <param name="result">Матрица результата</param>
+/// <param name="sizeN">Число строк</param>
+/// <param name="sizeM">Число столбцов</param>
+/// <returns></returns>
+extern "C" __declspec (dllexport) void _stdcall trans_matrix(int* matrix, int* result, int sizeN, int sizeM)
 {
     set_device();
-    array_view<int, 2> one(sizeN, sizeM, matrix_one);
+    array_view<int, 2> one(sizeN, sizeM, matrix);
     array_view<int, 2> res(sizeM, sizeN, result);
 
     parallel_for_each(res.extent, [=](index<2> idx) restrict(amp)
@@ -80,6 +109,17 @@ extern "C" __declspec (dllexport) void _stdcall trans_matrix(int* matrix_one, in
     res.synchronize();
 }
 
+
+/// <summary>
+/// Умножение матрицы
+/// </summary>
+/// <param name="matrix_one">Матрица А</param>
+/// <param name="matrix_two">Матрица B</param>
+/// <param name="size_matrixes">размеры матриц в виде массива, 
+/// индексы[0 - число строк первой матрицы, 1 - число столбцов первой матрицы, 
+/// 2 - число строк второй матрицы, 3 - числов столбцов втрой матрицы]</param>
+/// <param name="result">Результирующая матрицы</param>
+/// <returns></returns>
 extern "C" __declspec (dllexport) void _stdcall multiply_matrix(int* matrix_one, int* matrix_two, int* size_matrixes, int* result)
 {
     set_device();

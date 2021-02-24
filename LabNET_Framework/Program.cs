@@ -7,25 +7,16 @@ using System.Threading;
 
 namespace LabNET_Framework
 {
-
     class Program
     {
         static void Main()
         {
-            // AMP.list_all_accelerators();
-
-
-              Test.SumVectors(1000000);
-
-
-               // for (int i = 0; i < 10; i++)
-                   // Test.TransMatrix(1000, 1000);
-
-          /*  for(int i=0; i<10; i++)
-                Test.ProductMatrix(1000, 1000, 1000, 50);*/
         }
     }
 
+    /// <summary>
+    /// Класс для тестирования
+    /// </summary>
     public class Test
     {
         public static void ProductMatrix(int oneSizeN, int oneSizeM, int twoSizeN, int twoSizeM)
@@ -90,6 +81,9 @@ namespace LabNET_Framework
         }
     }
 
+    /// <summary>
+    /// Класс для работы с AMP(обертка)
+    /// </summary>
     public class AMP
     {
         /// <summary>
@@ -135,6 +129,9 @@ namespace LabNET_Framework
         public extern unsafe static void set_device();
     }
 
+    /// <summary>
+    /// Класс вспомогательных инструментов
+    /// </summary>
     public class Tools
     {
         public static void ShowTime(string type, Action action)
@@ -177,6 +174,9 @@ namespace LabNET_Framework
         }
     }
 
+    /// <summary>
+    /// Класс, реализующий работу алгоритмов на CPU
+    /// </summary>
     public class CPU
     {
         static int[,] tempMatrix;
@@ -334,6 +334,9 @@ namespace LabNET_Framework
         }
     }
 
+    /// <summary>
+    /// Класс, реализующий работу алгоритмов на GPU
+    /// </summary>
     public class GPU
     {
         public static unsafe int[] SumVectors(int[] one, int[] two, int size)
